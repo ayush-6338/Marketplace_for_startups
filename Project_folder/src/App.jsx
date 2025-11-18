@@ -5,7 +5,7 @@ const App = () => {
     <div>
       <h1>Hello world</h1>
       <p>seeing push is working or not.</p>
-      <P>hi there</P>
+      <p>hi there</p>
     </div>
   )
 }
