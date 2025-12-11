@@ -1,13 +1,11 @@
-import React from 'react'
+import React from 'react';
+import Layout from './components/layout/Layout';
+import AppRoutes from './routes/routes';
 
-const App = () => {
+export default function App() {
   return (
-    <div>
-      <h1>Hello world</h1>
-      <p>seeing push is working or not.</p>
-      <p>hi there</p>
-    </div>
-  )
+    <Layout>
+      <AppRoutes />
+    </Layout>
+  );
 }
-
-export default App
