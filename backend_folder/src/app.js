@@ -4,6 +4,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import connectDB from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
+
 
 dotenv.config();
 
@@ -16,6 +18,8 @@ connectDB();
 app.use(helmet());
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+app.use('/api/auth', authRoutes);
+
 
 // Rate limiter (anti misuse)
 const limiter = rateLimit({
