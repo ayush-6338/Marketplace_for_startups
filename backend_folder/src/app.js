@@ -5,6 +5,9 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
+import startupRoutes from './routes/startupRoutes.js';
+import gigRoutes from './routes/gigRoutes.js';
+
 
 
 dotenv.config();
@@ -19,6 +22,9 @@ app.use(helmet());
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use('/api/startups', startupRoutes);
+app.use('/api/gigs', gigRoutes);
+
 
 
 // Rate limiter (anti misuse)
