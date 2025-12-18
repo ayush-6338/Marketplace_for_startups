@@ -6,50 +6,46 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
 
     email: {
       type: String,
       required: true,
       unique: true,
-      lowercase: true
+      lowercase: true,
     },
 
     password: {
       type: String,
-      required: true
+      required: true,
     },
 
     role: {
       type: String,
-      enum: ['admin', 'startup', 'freelancer', 'client'],
-      default: 'client'
-    },
-
-    isEmailVerified: {
-      type: Boolean,
-      default: false
+      enum: ['startup', 'freelancer', 'client', 'admin'],
+      default: 'client',
     },
 
     isSuspended: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   { timestamps: true }
 );
 
-// Hash password before save
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
+// ✅ CORRECT pre-save hook (IMPORTANT)
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Compare password
-userSchema.methods.comparePassword = function (password) {
-  return bcrypt.compare(password, this.password);
+// ✅ compare password method
+userSchema.methods.comparePassword = async function (enteredPassword) {
+  return bcrypt.compare(enteredPassword, this.password);
 };
 
 export default mongoose.model('User', userSchema);

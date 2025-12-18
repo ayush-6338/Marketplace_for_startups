@@ -9,7 +9,7 @@ export const applyToGig = async (req, res) => {
     if (!gigId || !message) {
       return res.status(400).json({ message: 'Gig and message required' });
     }
-
+    
     const gig = await Gig.findById(gigId);
     if (!gig || gig.isHidden) {
       return res.status(404).json({ message: 'Gig not found' });
