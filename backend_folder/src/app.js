@@ -7,8 +7,8 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import startupRoutes from './routes/startupRoutes.js';
 import gigRoutes from './routes/gigRoutes.js';
-
-
+import proposalRoutes from './routes/proposalRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config();
 
@@ -24,8 +24,8 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/startups', startupRoutes);
 app.use('/api/gigs', gigRoutes);
-
-
+app.use('/api/proposals', proposalRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Rate limiter (anti misuse)
 const limiter = rateLimit({
