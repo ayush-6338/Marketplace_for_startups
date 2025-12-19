@@ -1,50 +1,43 @@
 import { useEffect, useState } from 'react';
 import { getAllGigs } from '../../services/gigApi';
-import { applyToGig } from '../../services/proposalApi';
+import GigCard from '../../components/gigs/GigCard';
 
 const Gigs = () => {
   const [gigs, setGigs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getAllGigs()
       .then(res => setGigs(res.data))
-      .catch(() => alert('Failed to load gigs'));
+      .catch(() => alert('Failed to load gigs'))
+      .finally(() => setLoading(false));
   }, []);
 
-  const handleApply = async (gigId) => {
-    try {
-      await applyToGig({
-        gigId,
-        message: 'I am interested in this gig',
-      });
-      alert('Applied successfully');
-    } catch (err) {
-      alert(err.response?.data?.message || 'Apply failed');
-    }
-  };
-
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Explore Gigs</h1>
+    <div className="min-h-screen bg-slate-950 text-white pt-24 px-6 md:px-12">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-green-500">
+          All Gigs
+        </h1>
 
-      {gigs.map(gig => (
-        <div
-          key={gig._id}
-          className="border p-4 mb-4 rounded shadow-sm"
-        >
-          <h2 className="font-semibold text-lg">{gig.title}</h2>
-          <p className="text-gray-600">{gig.description}</p>
-          <p className="mt-1 font-medium">₹{gig.price}</p>
-
-          {/* 🔘 APPLY BUTTON — ADD HERE */}
-          <button
-            onClick={() => handleApply(gig._id)}
-            className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Apply
-          </button>
-        </div>
-      ))}
+        {loading ? (
+             <div className="flex justify-center py-20">
+                <div className="h-10 w-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+             </div>
+        ) : (
+             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {gigs.map(gig => (
+                    <GigCard key={gig._id} gig={gig} />
+                ))}
+             </div>
+        )}
+        
+        {!loading && gigs.length === 0 && (
+          <div className="text-center text-gray-500 py-12">
+            No gigs available at the moment.
+          </div>
+        )}
+      </div>
     </div>
   );
 };

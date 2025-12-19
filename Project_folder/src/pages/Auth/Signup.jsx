@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { signup } from '../../services/authApi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+
+import { useAuth } from '../../contexts/AuthContext';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { loginAction } = useAuth();
 
   const [form, setForm] = useState({
     name: '',
@@ -33,8 +36,8 @@ const Signup = () => {
 
       const res = await signup(signupData);
 
-      // store token
-      localStorage.setItem('token', res.data.token);
+      // update context and storage
+      loginAction(res.data.token, res.data.user);
 
       alert('Signup successful');
 
@@ -54,27 +57,28 @@ const Signup = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center bg-[#0f172a] overflow-hidden font-sans">
+    <div className="relative min-h-screen w-full flex items-center justify-center bg-slate-950 overflow-hidden font-sans selection:bg-blue-500 selection:text-white">
 
       {/* 🔵 Animated Background */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse"></div>
         <div
-          className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[120px] animate-pulse"
+          className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse"
           style={{ animationDelay: '1.5s' }}
         ></div>
+        <div className="absolute top-[40%] left-[20%] w-[200px] h-[200px] bg-indigo-500/10 rounded-full blur-[80px] animate-bounce duration-[10s]"></div>
       </div>
 
       {/* Card */}
-      <div className="relative z-10 w-full max-w-[420px] bg-white/90 backdrop-blur-2xl rounded-3xl p-10 shadow-2xl border border-white/20 mx-4">
+      <div className="relative z-10 w-full max-w-[420px] bg-white/5 backdrop-blur-2xl rounded-3xl p-10 shadow-2xl border border-white/10 mx-4 my-8">
 
         {/* Header */}
         <div className="mb-8 text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+          <h2 className="text-3xl font-extrabold text-white tracking-tight">
             Create Account
           </h2>
-          <p className="text-gray-500 mt-2 text-sm">
-            Join our community and start your journey today.
+          <p className="text-gray-400 mt-2 text-sm">
+            Join our professional community today.
           </p>
         </div>
 
@@ -83,7 +87,7 @@ const Signup = () => {
 
           {/* Name */}
           <div>
-            <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider ml-1">
+            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">
               Full Name
             </label>
             <input
@@ -93,13 +97,13 @@ const Signup = () => {
               placeholder="Your Name"
               value={form.name}
               onChange={handleChange}
-              className="w-full bg-gray-100/60 p-4 rounded-2xl mt-1 outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
+              className="w-full bg-slate-900/50 border border-white/10 text-white p-4 rounded-xl mt-1 outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-gray-600"
             />
           </div>
 
           {/* Email */}
           <div>
-            <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider ml-1">
+            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">
               E-mail
             </label>
             <input
@@ -109,7 +113,7 @@ const Signup = () => {
               placeholder="name@company.com"
               value={form.email}
               onChange={handleChange}
-              className="w-full bg-gray-100/60 p-4 rounded-2xl mt-1 outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
+              className="w-full bg-slate-900/50 border border-white/10 text-white p-4 rounded-xl mt-1 outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-gray-600"
             />
           </div>
 
@@ -118,18 +122,18 @@ const Signup = () => {
             <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">
               I want to join as
             </label>
-            <div className="relative">
+            <div className="relative mt-1">
               <select
                 name="role"
                 value={form.role}
                 onChange={handleChange}
-                className="w-full bg-gray-100/60 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/30 text-gray-700 appearance-none cursor-pointer"
+                className="w-full bg-slate-900/50 border border-white/10 text-white p-4 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none cursor-pointer"
               >
-                <option value="startup">Startup (Hiring/Building)</option>
-                <option value="freelancer">Freelancer (Providing Services)</option>
-                <option value="client">Client (Looking for Experts)</option>
+                <option value="startup" className="bg-slate-900 text-gray-300">Startup (Hiring/Building)</option>
+                <option value="freelancer" className="bg-slate-900 text-gray-300">Freelancer (Providing Services)</option>
+                <option value="client" className="bg-slate-900 text-gray-300">Client (Looking for Experts)</option>
               </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
                 ▼
               </div>
             </div>
@@ -144,7 +148,7 @@ const Signup = () => {
               placeholder="Password"
               value={form.password}
               onChange={handleChange}
-              className="w-full bg-gray-100/60 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/30"
+              className="w-full bg-slate-900/50 border border-white/10 text-white p-4 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-gray-600"
             />
             <input
               required
@@ -153,7 +157,7 @@ const Signup = () => {
               placeholder="Confirm"
               value={form.confirmPassword}
               onChange={handleChange}
-              className="w-full bg-gray-100/60 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/30"
+              className="w-full bg-slate-900/50 border border-white/10 text-white p-4 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-gray-600"
             />
           </div>
 
@@ -161,10 +165,10 @@ const Signup = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full font-bold text-white py-4 mt-4 rounded-2xl shadow-xl transition-all
+            className={`w-full font-bold text-white py-4 mt-4 rounded-xl shadow-lg transition-all
               ${loading
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:-translate-y-1 hover:shadow-blue-500/40'
+                ? 'bg-gray-600 cursor-not-allowed'
+                : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-500/25 transform hover:-translate-y-0.5'
               }`}
           >
             {loading ? 'Creating Account...' : 'Create Account'}
@@ -172,12 +176,12 @@ const Signup = () => {
         </form>
 
         {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-sm text-gray-500">
+        <div className="text-center mt-8 pt-6 border-t border-white/5">
+          <p className="text-sm text-gray-400">
             Already have an account?{' '}
-            <a href="/login" className="text-blue-600 font-bold hover:underline">
+            <Link to="/login" className="text-blue-400 font-bold hover:text-blue-300 hover:underline transition">
               Sign In
-            </a>
+            </Link>
           </p>
         </div>
       </div>

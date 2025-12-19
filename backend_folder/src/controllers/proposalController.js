@@ -6,10 +6,16 @@ export const applyToGig = async (req, res) => {
   try {
     const { gigId, message } = req.body;
 
+    if (req.user.role !== 'freelancer') {
+      return res.status(403).json({
+        message: 'Only freelancers can apply to gigs'
+      });
+    }
+
     if (!gigId || !message) {
       return res.status(400).json({ message: 'Gig and message required' });
     }
-    
+
     const gig = await Gig.findById(gigId);
     if (!gig || gig.isHidden) {
       return res.status(404).json({ message: 'Gig not found' });
@@ -74,5 +80,17 @@ export const updateProposalStatus = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to update proposal' });
+  }
+};
+// GET MY PROPOSALS
+export const getMyProposals = async (req, res) => {
+  try {
+    const proposals = await Proposal.find({ applicant: req.user._id })
+      .populate('gig', 'title description price status')
+      .sort({ createdAt: -1 });
+
+    res.json(proposals);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch your proposals' });
   }
 };

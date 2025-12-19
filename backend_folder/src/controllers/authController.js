@@ -80,3 +80,14 @@ export const login = async (req, res) => {
     res.status(500).json({ message: 'Login failed', error: error.message });
   }
 };
+// GET ME
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch user' });
+  }
+};
+
+

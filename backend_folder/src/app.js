@@ -9,6 +9,7 @@ import startupRoutes from './routes/startupRoutes.js';
 import gigRoutes from './routes/gigRoutes.js';
 import proposalRoutes from './routes/proposalRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/api/startups', startupRoutes);
 app.use('/api/gigs', gigRoutes);
 app.use('/api/proposals', proposalRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/users', userRoutes);
 
 // Rate limiter (anti misuse)
 const limiter = rateLimit({

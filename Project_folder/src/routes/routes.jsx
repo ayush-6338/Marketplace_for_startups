@@ -6,8 +6,11 @@ const Home = lazy(() => import('../pages/Home/Home'));
 const Explore = lazy(() => import('../pages/Explore/Explore'));
 const StartupView = lazy(() => import('../pages/Startup/StartupView'));
 const Gigs = lazy(() => import('../pages/Gigs/Gigs'));
+const GigDetail = lazy(() => import('../pages/Gigs/GigDetail'));
 const Signup = lazy(() => import('../pages/Auth/Signup'));
 const Login = lazy(() => import('../pages/Auth/Login'));
+const Dashboard = lazy(() => import('../pages/Dashboard/Dashboard'));
+const CreateGig = lazy(() => import('../pages/Gigs/CreateGig'));
 
 export default function AppRoutes() {
   return (
@@ -33,17 +36,30 @@ export default function AppRoutes() {
           }
         />
 
+        <Route path="/gigs" element={<Gigs />} />
+        <Route path="/gigs/:id" element={<GigDetail />} />
+
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        
         <Route
-          path="/gigs"
+          path="/dashboard"
           element={
             <PrivateRoute>
-              <Gigs />
+              <Dashboard />
             </PrivateRoute>
           }
         />
 
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/dashboard/create-gig"
+          element={
+            <PrivateRoute>
+              <CreateGig />
+            </PrivateRoute>
+          }
+        />
+
         <Route path="*" element={<div>404 not found</div>} />
       </Routes>
     </Suspense>

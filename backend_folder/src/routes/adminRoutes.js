@@ -1,21 +1,26 @@
 import express from 'express';
 import authMiddleware from '../middlewares/auth.js';
 import adminOnly from '../middlewares/adminOnly.js';
+
 import {
   toggleUserSuspend,
-  toggleStartupVisibility,
-  toggleGigVisibility,
+  toggleGigHide,
+  getAllUsers,
+  getAllGigs,
+  getDashboardStats, // Preserved
 } from '../controllers/adminController.js';
 
 const router = express.Router();
 
-// user moderation
+// stats (Preserved)
+router.get('/stats', authMiddleware, adminOnly, getDashboardStats);
+
+// users
+router.get('/users', authMiddleware, adminOnly, getAllUsers);
 router.put('/users/:id/suspend', authMiddleware, adminOnly, toggleUserSuspend);
 
-// startup moderation
-router.put('/startups/:id/hide', authMiddleware, adminOnly, toggleStartupVisibility);
-
-// gig moderation
-router.put('/gigs/:id/hide', authMiddleware, adminOnly, toggleGigVisibility);
+// gigs
+router.get('/gigs', authMiddleware, adminOnly, getAllGigs);
+router.put('/gigs/:id/hide', authMiddleware, adminOnly, toggleGigHide);
 
 export default router;

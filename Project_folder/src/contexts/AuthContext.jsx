@@ -29,8 +29,13 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const loginAction = (token, userData) => {
+    localStorage.setItem('token', token);
+    setUser(userData);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout, loginAction }}>
       {children}
     </AuthContext.Provider>
   );

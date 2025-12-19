@@ -5,6 +5,12 @@ export const createGig = async (req, res) => {
   try {
     const { title, description, category, price, deliveryDays, tags } = req.body;
 
+    if (!['client', 'startup'].includes(req.user.role)) {
+      return res.status(403).json({
+        message: 'Only clients or startups can create gigs'
+      });
+    }
+
     if (!title || !description || !category || !price || !deliveryDays) {
       return res.status(400).json({ message: 'All required fields missing' });
     }
@@ -79,5 +85,14 @@ export const updateGig = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to update gig' });
+  }
+};
+// GET MY GIGS
+export const getMyGigs = async (req, res) => {
+  try {
+    const gigs = await Gig.find({ owner: req.user._id }).sort({ createdAt: -1 });
+    res.json(gigs);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch your gigs' });
   }
 };

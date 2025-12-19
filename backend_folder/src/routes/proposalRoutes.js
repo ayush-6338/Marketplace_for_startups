@@ -3,11 +3,15 @@ import {
   applyToGig,
   getProposalsForGig,
   updateProposalStatus,
+  getMyProposals,
 } from '../controllers/proposalController.js';
 
 import authMiddleware from '../middlewares/auth.js';
 
 const router = express.Router();
+
+// get my proposals
+router.get('/my', authMiddleware, getMyProposals);
 
 // apply to gig
 router.post('/', authMiddleware, applyToGig);
