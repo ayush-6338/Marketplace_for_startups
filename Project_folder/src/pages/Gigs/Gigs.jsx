@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getAllGigs } from '../../services/gigApi';
 import GigCard from '../../components/gigs/GigCard';
+import { showError } from '../../utils/toast';
 
 const Gigs = () => {
   const [gigs, setGigs] = useState([]);
@@ -9,7 +10,7 @@ const Gigs = () => {
   useEffect(() => {
     getAllGigs()
       .then(res => setGigs(res.data))
-      .catch(() => alert('Failed to load gigs'))
+      .catch(() => showError('Failed to load gigs'))
       .finally(() => setLoading(false));
   }, []);
 

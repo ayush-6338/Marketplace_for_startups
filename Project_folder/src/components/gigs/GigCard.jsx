@@ -1,10 +1,39 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { toggleFavorite } from '../../services/userApi';
 
 const GigCard = ({ gig }) => {
+  const { user } = useAuth();
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleSave = async (e) => {
+    e.stopPropagation(); // prevent navigation
+    e.preventDefault();
+    try {
+        await toggleFavorite(gig._id);
+        setIsSaved(!isSaved);
+    } catch (err) {
+        console.error("Failed to save gig");
+    }
+  };
+
+  // Only show for Freelancers
+  const showSave = user && user.role === 'freelancer';
+
   return (
-    <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-2xl p-5 hover:border-green-500/50 transition duration-300 group hover:bg-slate-900/80 flex flex-col h-full">
+    <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-2xl p-5 hover:border-green-500/50 transition duration-300 group hover:bg-slate-900/80 flex flex-col h-full relative">
+       {showSave && (
+          <button 
+            onClick={handleSave}
+            className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition z-10 p-2 bg-slate-900/50 rounded-full"
+          >
+             {isSaved ? '❤️' : '🤍'} 
+          </button>
+      )}
+
       <div className="flex-1">
-        <div className="flex justify-between items-start mb-2">
+        <div className="flex justify-between items-start mb-2 pr-8">
             <h3 className="text-xl font-bold text-white group-hover:text-green-400 transition">
                 {gig.title}
             </h3>

@@ -12,3 +12,87 @@ export const getFreelancers = async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch freelancers' });
     }
 };
+
+// GET FAVORITES
+export const getFavorites = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id)
+            .populate('favoriteFreelancers', 'name email role skills rating')
+            .populate('savedGigs'); // will populate full gig details
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (req.user.role === 'freelancer') {
+            res.json(user.savedGigs);
+        } else {
+            res.json(user.favoriteFreelancers);
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch favorites' });
+    }
+};
+
+// TOGGLE FAVORITE
+export const toggleFavorite = async (req, res) => {
+    try {
+        const { id } = req.body; // ID of freelancer or gig
+        const user = await User.findById(req.user._id);
+
+        if (req.user.role === 'freelancer') {
+            // Toggle Gig
+            const index = user.savedGigs.indexOf(id);
+            if (index === -1) {
+                user.savedGigs.push(id);
+            } else {
+                user.savedGigs.splice(index, 1);
+            }
+        } else { // client or startup
+            // Toggle Freelancer
+            const index = user.favoriteFreelancers.indexOf(id);
+            if (index === -1) {
+                user.favoriteFreelancers.push(id);
+            } else {
+                user.favoriteFreelancers.splice(index, 1);
+            }
+        }
+
+        await user.save();
+        res.json({ message: 'Favorites updated', favorites: req.user.role === 'freelancer' ? user.savedGigs : user.favoriteFreelancers });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to update favorites' });
+    }
+};
+
+// GET MY PROFILE
+export const getMyProfile = (req, res) => {
+    res.json(req.user);
+};
+
+// UPDATE PROFILE
+export const updateProfile = async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            req.body,
+            { new: true, runValidators: true }
+        );
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to update profile' });
+    }
+};
+
+// GET PUBLIC PROFILE BY ID
+export const getUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select('-password -savedGigs -favoriteFreelancers');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch user profile' });
+    }
+};

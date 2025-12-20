@@ -4,6 +4,8 @@ import { getGigById } from '../../services/gigApi';
 import { useAuth } from '../../contexts/AuthContext';
 import { applyToGig } from '../../services/proposalApi';
 
+import { showSuccess, showError } from '../../utils/toast';
+
 const GigDetail = () => {
   const { id } = useParams();
   const [gig, setGig] = useState(null);
@@ -17,7 +19,7 @@ const GigDetail = () => {
         setLoading(false);
       })
       .catch(() => {
-        alert('Failed to load gig');
+        showError('Failed to load gig');
         setLoading(false);
       });
   }, [id]);
@@ -28,9 +30,9 @@ const GigDetail = () => {
         gigId: gig._id,
         message: 'I am interested in this gig',
       });
-      alert('Applied successfully');
+      showSuccess('Applied successfully');
     } catch (err) {
-      alert(err.response?.data?.message || 'Apply failed');
+      showError(err.response?.data?.message || 'Apply failed');
     }
   };
 

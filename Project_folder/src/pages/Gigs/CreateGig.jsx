@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
 
+import { showSuccess, showError } from '../../utils/toast';
+
 const CreateGig = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -28,10 +30,10 @@ const CreateGig = () => {
 
     try {
       await apiClient.post('/gigs', form);
-      alert('Gig created successfully');
+      showSuccess('Gig created successfully');
       navigate('/dashboard');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to create gig');
+      showError(err.response?.data?.message || 'Failed to create gig');
     } finally {
       setLoading(false);
     }

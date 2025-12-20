@@ -11,6 +11,10 @@ const Signup = lazy(() => import('../pages/Auth/Signup'));
 const Login = lazy(() => import('../pages/Auth/Login'));
 const Dashboard = lazy(() => import('../pages/Dashboard/Dashboard'));
 const CreateGig = lazy(() => import('../pages/Gigs/CreateGig'));
+const Favorites = lazy(() => import('../pages/Favorites'));
+const Profile = lazy(() => import('../pages/Profile/Profile'));
+const About = lazy(() => import('../pages/Public/About'));
+const Contact = lazy(() => import('../pages/Public/Contact'));
 
 export default function AppRoutes() {
   return (
@@ -39,6 +43,9 @@ export default function AppRoutes() {
         <Route path="/gigs" element={<Gigs />} />
         <Route path="/gigs/:id" element={<GigDetail />} />
 
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         
@@ -56,6 +63,33 @@ export default function AppRoutes() {
           element={
             <PrivateRoute>
               <CreateGig />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/favorites"
+          element={
+            <PrivateRoute>
+              <Favorites />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/profile/:id"
+          element={
+            <PrivateRoute>
+              <Profile />
             </PrivateRoute>
           }
         />

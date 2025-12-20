@@ -31,6 +31,38 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    // Common Profile Fields
+    avatar: String,
+    bio: String,
+    location: String,
+
+    // Freelancer Specific
+    skills: [String],
+    experience: String,
+    portfolio: String,
+
+    // Startup/Client Specific
+    companyName: String,
+    industry: String,
+    teamSize: String,
+    website: String,
+
+    // Favorites for Client/Startup
+    favoriteFreelancers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+
+    // Saved Gigs for Freelancers
+    savedGigs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Gig',
+      },
+    ],
   },
   { timestamps: true }
 );

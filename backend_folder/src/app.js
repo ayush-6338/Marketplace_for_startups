@@ -10,6 +10,7 @@ import gigRoutes from './routes/gigRoutes.js';
 import proposalRoutes from './routes/proposalRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use('/api/gigs', gigRoutes);
 app.use('/api/proposals', proposalRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Rate limiter (anti misuse)
 const limiter = rateLimit({

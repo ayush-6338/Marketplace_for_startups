@@ -1,4 +1,6 @@
 import Gig from '../models/Gig.js';
+import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 
 // CREATE GIG
 export const createGig = async (req, res) => {
@@ -25,6 +27,17 @@ export const createGig = async (req, res) => {
       tags,
     });
 
+    // NOTIFICATION: Notify all freelancers
+    // WARNING: This is a broadcast. For larger apps, use background jobs.
+    const freelancers = await User.find({ role: 'freelancer' });
+    const notifications = freelancers.map(f => ({
+      recipient: f._id,
+      message: `New gig posted: ${title}`,
+      type: 'new_gig',
+      relatedId: gig._id
+    }));
+    await Notification.insertMany(notifications);
+
     res.status(201).json({
       message: 'Gig created successfully',
       gig,
@@ -37,7 +50,12 @@ export const createGig = async (req, res) => {
 // GET ALL GIGS
 export const getAllGigs = async (req, res) => {
   try {
-    const gigs = await Gig.find({ isHidden: false })
+    const filter = { isHidden: false };
+    if (req.query.category) {
+      filter.category = req.query.category;
+    }
+
+    const gigs = await Gig.find(filter)
       .populate('owner', 'name email role')
       .sort({ createdAt: -1 });
 

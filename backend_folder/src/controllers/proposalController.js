@@ -1,5 +1,6 @@
 import Proposal from '../models/Proposal.js';
 import Gig from '../models/Gig.js';
+import Notification from '../models/Notification.js';
 
 // APPLY TO GIG
 export const applyToGig = async (req, res) => {
@@ -25,6 +26,14 @@ export const applyToGig = async (req, res) => {
       gig: gigId,
       applicant: req.user._id,
       message,
+    });
+
+    // NOTIFICATION: Notify gig owner
+    await Notification.create({
+      recipient: gig.owner,
+      message: `${req.user.name} applied to your gig: ${gig.title}`,
+      type: 'application',
+      relatedId: gig._id // or proposal._id if preferred, but gig link is more useful usually
     });
 
     res.status(201).json({

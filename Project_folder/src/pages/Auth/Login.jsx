@@ -4,6 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 
 import { useAuth } from '../../contexts/AuthContext';
 
+import { showSuccess, showError } from '../../utils/toast';
+
 const Login = () => {
   const navigate = useNavigate();
   const { loginAction } = useAuth();
@@ -29,12 +31,12 @@ const Login = () => {
       // update context and storage
       loginAction(res.data.token, res.data.user);
 
-      alert('Login successful');
+      showSuccess('Login successful');
 
       // redirect after login
       navigate('/explore');
     } catch (err) {
-      alert(err.response?.data?.message || 'Login failed');
+      showError(err.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }

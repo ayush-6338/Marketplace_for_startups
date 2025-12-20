@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { getAdminStats } from '../../services/dashboardApi';
 import { getAllUsers, getAllGigsAdmin, suspendUser, hideGig } from '../../services/adminApi';
 
+import { showError } from '../../utils/toast';
+
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ users: 0, gigs: 0, startups: 0 });
   const [users, setUsers] = useState([]);
@@ -35,7 +37,7 @@ const AdminDashboard = () => {
       // update local state
       setUsers(users.map(u => u._id === userId ? { ...u, isSuspended: !u.isSuspended } : u));
     } catch (error) {
-      alert('Action failed');
+      showError('Action failed');
     }
   };
 
@@ -45,7 +47,7 @@ const AdminDashboard = () => {
       // update local state
       setGigs(gigs.map(g => g._id === gigId ? { ...g, isHidden: !g.isHidden } : g));
     } catch (error) {
-      alert('Action failed');
+      showError('Action failed');
     }
   };
 

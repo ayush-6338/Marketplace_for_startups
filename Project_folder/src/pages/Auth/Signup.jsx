@@ -4,6 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 
 import { useAuth } from '../../contexts/AuthContext';
 
+import { showSuccess, showError } from '../../utils/toast';
+
 const Signup = () => {
   const navigate = useNavigate();
   const { loginAction } = useAuth();
@@ -27,7 +29,7 @@ const Signup = () => {
 
     // basic validation
     if (form.password !== form.confirmPassword) {
-      return alert('Passwords do not match');
+      return showError('Passwords do not match');
     }
 
     setLoading(true);
@@ -39,19 +41,19 @@ const Signup = () => {
       // update context and storage
       loginAction(res.data.token, res.data.user);
 
-      alert('Signup successful');
+      showSuccess('Signup successful');
 
       // 🔥 IMPORTANT: redirect after signup
       navigate('/explore');
 
     } catch (err) {
       console.error('Signup error:', err.response?.data || err.message);
-      alert(
+      showError(
         err.response?.data?.message ||
         err.response?.data?.error ||
-        'Signup failed');
-}
- finally {
+        'Signup failed'
+      );
+    } finally {
       setLoading(false);
     }
   };
