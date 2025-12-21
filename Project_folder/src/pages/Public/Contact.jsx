@@ -51,15 +51,15 @@ const Contact = () => {
 
             <div className="space-y-6">
                 <Info title="Email" icon="📧">
-                    support@marketplace.com
+                    support@gignova.com
                 </Info>
 
                 <Info title="Phone" icon="📞">
-                    +91 9XXXXXXXXX
+                    +91 9934420315
                 </Info>
 
                 <Info title="Location" icon="📍">
-                    Bangalore, India
+                    Punjab, India
                 </Info>
             </div>
 

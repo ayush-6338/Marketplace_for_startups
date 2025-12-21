@@ -17,7 +17,7 @@ export const getFreelancers = async (req, res) => {
 export const getFavorites = async (req, res) => {
     try {
         const user = await User.findById(req.user._id)
-            .populate('favoriteFreelancers', 'name email role skills rating')
+            .populate('favoriteFreelancers')
             .populate('savedGigs'); // will populate full gig details
 
         if (!user) {

@@ -7,7 +7,8 @@ export const applyToGig = async (req, res) => {
   try {
     const { gigId, message } = req.body;
 
-    if (req.user.role !== 'freelancer') {
+    // Case-insensitive check just in case
+    if (req.user.role.toLowerCase() !== 'freelancer') {
       return res.status(403).json({
         message: 'Only freelancers can apply to gigs'
       });

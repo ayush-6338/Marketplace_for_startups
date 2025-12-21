@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import TrendingGigs from '../../components/gigs/TrendingGigs';
 
 const Home = () => {
   const [typedText, setTypedText] = useState('');
-  const fullText = "const platform = new Marketplace('Startups', 'Freelancers');";
+  const fullText = "const platform = new GigNova('Startups', 'Freelancers');";
 
   useEffect(() => {
     let index = 0;
@@ -53,13 +54,37 @@ const Home = () => {
             </Link>
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-gray-500 pt-4">
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="w-8 h-8 rounded-full bg-gray-700 border-2 border-slate-950"></div>
-              ))}
+          <div className="flex flex-col gap-4 pt-8 border-t border-white/10">
+            <p className="text-sm text-gray-500 font-medium">Powering the world's best teams</p>
+            <div className="flex flex-wrap items-center gap-8 opacity-60">
+              
+              {/* Slack */}
+              <img 
+                src="https://cdn-icons-png.flaticon.com/512/3800/3800058.png" 
+                alt="Slack" 
+                className="h-8 w-auto object-contain invert opacity-80 hover:opacity-100 transition"
+              />
+
+              {/* User Provided Icon */}
+              <img 
+                src="https://cdn-icons-png.flaticon.com/512/11423/11423407.png" 
+                alt="Partner" 
+                className="h-8 w-auto object-contain invert opacity-80 hover:opacity-100 transition"
+              />
+                {/* Stripe */}
+                <img 
+                  src="https://cdn-icons-png.flaticon.com/512/5968/5968204.png" 
+                  alt="Stripe" 
+                  className="h-8 w-auto object-contain invert opacity-80 hover:opacity-100 transition"
+                />
+
+               {/* Notion */}
+               <img 
+                 src="https://img.icons8.com/?size=512&id=F6H2fsqXKBwH&format=png" 
+                 alt="Notion" 
+                 className="h-8 w-auto object-contain invert opacity-80 hover:opacity-100 transition"
+               />
             </div>
-            <p>Trusted by 500+ Startups</p>
           </div>
         </div>
 
@@ -129,33 +154,10 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Gigs Teaser (Mock Data or Dynamic if we wanted, sticking to static for landing) */}
-      <section className="relative z-10 py-20 px-6 max-w-7xl mx-auto border-t border-white/5">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">Trending Gigs</h2>
-            <p className="text-gray-400">Latest opportunities added to the platform</p>
-          </div>
-          <Link to="/gigs" className="text-blue-400 hover:text-blue-300 font-medium mt-4 md:mt-0">
-            View All Gigs →
-          </Link>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="bg-slate-900 border border-white/5 rounded-xl overflow-hidden hover:border-white/20 transition group">
-              <div className="h-32 bg-slate-800 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 group-hover:scale-105 transition duration-500"></div>
-              </div>
-              <div className="p-4">
-                <div className="h-4 w-24 bg-white/10 rounded mb-3"></div>
-                <div className="h-6 w-3/4 bg-white/10 rounded mb-2"></div>
-                <div className="h-4 w-1/2 bg-white/5 rounded"></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Featured Gigs Teaser - Dynamic */}
+      <div className="px-6 max-w-7xl mx-auto border-t border-white/5 py-20">
+         <TrendingGigs />
+      </div>
 
     </div>
   );

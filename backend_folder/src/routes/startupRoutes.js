@@ -6,7 +6,7 @@ import {
   updateStartup,
 } from '../controllers/startupController.js';
 
-import authMiddleware from '../middlewares/auth.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 

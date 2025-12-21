@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getMyGigs } from '../../services/dashboardApi';
+import PostedGigs from '../../components/dashboard/PostedGigs';
 
 const ClientDashboard = () => {
   const [gigs, setGigs] = useState([]);
@@ -20,31 +21,9 @@ const ClientDashboard = () => {
       </h1>
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white/5 border border-white/10 p-8 rounded-2xl hover:bg-white/10 transition backdrop-blur-md shadow-lg group">
-          <h2 className="font-bold text-xl mb-3 group-hover:text-blue-400 transition">Your Posted Gigs</h2>
-          <p className="text-gray-400 mb-6">
-            You have posted <span className="text-white font-bold">{gigs.length}</span> active gigs.
-          </p>
-          <Link to="/dashboard/create-gig" className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition shadow-lg shadow-blue-500/20 mb-6">
-            + Post a Gig
-          </Link>
-          <div className="space-y-4">
-            {loading ? (
-              <p className="text-sm text-gray-500">Loading gigs...</p>
-            ) : gigs.length === 0 ? (
-              <p className="text-sm text-gray-500">No gigs posted yet.</p>
-            ) : (
-              gigs.slice(0, 3).map(gig => (
-                <div key={gig._id} className="p-3 bg-white/5 rounded-lg border border-white/5">
-                  <div className="font-semibold text-sm">{gig.title}</div>
-                  <div className="text-xs text-gray-400 mt-1 flex justify-between">
-                    <span>₹{gig.price}</span>
-                    <span>{new Date(gig.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+        {/* Replaced with new Component */}
+        <div className="h-[400px]">
+          <PostedGigs gigs={gigs} />
         </div>
 
         <div className="bg-white/5 border border-white/10 p-8 rounded-2xl hover:bg-white/10 transition backdrop-blur-md shadow-lg group">

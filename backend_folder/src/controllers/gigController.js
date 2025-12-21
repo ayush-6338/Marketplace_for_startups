@@ -108,9 +108,74 @@ export const updateGig = async (req, res) => {
 // GET MY GIGS
 export const getMyGigs = async (req, res) => {
   try {
-    const gigs = await Gig.find({ owner: req.user._id }).sort({ createdAt: -1 });
+    const gigs = await Gig.aggregate([
+      // 1. Match gigs owned by the user
+      { $match: { owner: req.user._id } },
+
+      // 2. Lookup proposals for each gig
+      {
+        $lookup: {
+          from: 'proposals',
+          localField: '_id',
+          foreignField: 'gig',
+          as: 'proposals'
+        }
+      },
+
+      // 3. Add proposalCount field
+      {
+        $addFields: {
+          proposalCount: { $size: '$proposals' }
+        }
+      },
+
+      // 4. Sort by newest first
+      { $sort: { createdAt: -1 } },
+
+      // 5. Project fields (optional, but good for cleanup) - keeping it simple for now to return full doc + count
+    ]);
+
     res.json(gigs);
   } catch (error) {
+    console.error('Get My Gigs Error:', error);
     res.status(500).json({ message: 'Failed to fetch your gigs' });
+  }
+};
+
+// GET TRENDING GIGS
+export const getTrendingGigs = async (req, res) => {
+  try {
+    // group gigs by category and count
+    const result = await Gig.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 1 }
+    ]);
+
+    if (result.length === 0) {
+      return res.json({ category: null, gigs: [] });
+    }
+
+    const topCategory = result[0]._id;
+
+    // fetch gigs from that category
+    const gigs = await Gig.find({ category: topCategory, isHidden: false })
+      .populate('owner', 'name email role')
+      .sort({ createdAt: -1 })
+      .limit(4);
+
+    res.json({
+      category: topCategory,
+      gigs
+    });
+
+  } catch (error) {
+    console.error('Trending Error:', error);
+    res.status(500).json({ message: 'Failed to load trending gigs' });
   }
 };

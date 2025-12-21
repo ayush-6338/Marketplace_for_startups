@@ -20,7 +20,7 @@ const About = () => {
         {/* HERO SECTION */}
         <section className="text-center py-20 px-6">
             <h1 className="text-5xl md:text-7xl font-extrabold mb-8 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            About <span className="">Marketplace</span>
+            About <span className="">GigNova</span>
             </h1>
             <p className="max-w-3xl mx-auto text-gray-300 text-xl leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">
             A modern platform that connects <span className="text-white font-semibold">startups</span> and <span className="text-white font-semibold">clients</span> with <span className="text-white font-semibold">skilled freelancers</span> to collaborate, build, and grow together.

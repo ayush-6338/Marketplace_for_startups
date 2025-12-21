@@ -141,7 +141,7 @@ const Navbar = () => {
         {/* Left: Logo and Main Nav */}
         <div className="flex items-center gap-8">
           <Link to="/" className="text-3xl font-bold tracking-tighter hover:opacity-90 transition">
-            <span className="text-white">Market</span><span className="text-green-500">place</span><span className="text-green-500">.</span>
+            <span className="text-white">Gig</span><span className="text-green-500">Nova</span><span className="text-green-500">.</span>
           </Link>
 
           {user && (
