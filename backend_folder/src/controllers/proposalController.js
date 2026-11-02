@@ -56,9 +56,18 @@ export const applyToGig = async (req, res) => {
 export const getProposalsForGig = async (req, res) => {
   try {
     const { gigId } = req.params;
+    const gig = await Gig.findById(gigId);
+
+    if (!gig || gig.isHidden) {
+      return res.status(404).json({ message: 'Gig not found' });
+    }
+
+    if (gig.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to view proposals for this gig' });
+    }
 
     const proposals = await Proposal.find({ gig: gigId })
-      .populate('applicant', 'name email role')
+      .populate('applicant', 'name email role avatar bio location skills experience portfolio')
       .sort({ createdAt: -1 });
 
     res.json(proposals);
@@ -76,9 +85,13 @@ export const updateProposalStatus = async (req, res) => {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
-    const proposal = await Proposal.findById(req.params.id);
+    const proposal = await Proposal.findById(req.params.id).populate('gig', 'owner title');
     if (!proposal) {
       return res.status(404).json({ message: 'Proposal not found' });
+    }
+
+    if (proposal.gig.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to update this proposal' });
     }
 
     proposal.status = status;

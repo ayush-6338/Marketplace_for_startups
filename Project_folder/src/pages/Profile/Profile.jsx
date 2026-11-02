@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProfile, updateProfile, getPublicProfile } from '../../services/userApi';
 import { useAuth } from '../../contexts/AuthContext';
@@ -12,31 +12,10 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({});
+  const avatarInputRef = useRef(null);
 
-  const isOwnProfile = !id || (currentUser && currentUser._id === id);
-
-  useEffect(() => {
-    fetchProfile();
-  }, [id]);
-
-  const fetchProfile = async () => {
-    setLoading(true);
-    try {
-      let data;
-      if (isOwnProfile) {
-        data = await getProfile();
-      } else {
-        data = await getPublicProfile(id);
-      }
-      setUser(data);
-      initializeForm(data);
-    } catch (error) {
-      toast.error('Failed to load profile');
-      navigate('/dashboard'); // redirect if failed
-    } finally {
-      setLoading(false);
-    }
-  };
+  const currentUserId = currentUser?._id || currentUser?.id;
+  const isOwnProfile = !id || currentUserId === id;
 
   const initializeForm = (userData) => {
     setForm({
@@ -54,8 +33,91 @@ export default function Profile() {
     });
   };
 
+  const fetchProfile = useCallback(async () => {
+    setLoading(true);
+    try {
+      let data;
+      if (isOwnProfile) {
+        data = await getProfile();
+      } else {
+        data = await getPublicProfile(id);
+      }
+      setUser(data);
+      initializeForm(data);
+    } catch {
+      toast.error('Failed to load profile');
+      navigate('/dashboard'); // redirect if failed
+    } finally {
+      setLoading(false);
+    }
+  }, [id, isOwnProfile, navigate]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const resizeAvatar = (file) => new Promise((resolve, reject) => {
+    const imageUrl = URL.createObjectURL(file);
+    const image = new Image();
+
+    image.onload = () => {
+      const maxSize = 512;
+      const scale = Math.min(maxSize / image.width, maxSize / image.height, 1);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(image.width * scale);
+      canvas.height = Math.round(image.height * scale);
+
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(imageUrl);
+      resolve(canvas.toDataURL('image/jpeg', 0.82));
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(imageUrl);
+      reject(new Error('Invalid image file'));
+    };
+
+    image.src = imageUrl;
+  });
+
+  const handleAvatarFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be smaller than 5MB');
+      return;
+    }
+
+    try {
+      const avatar = await resizeAvatar(file);
+      setForm((currentForm) => ({ ...currentForm, avatar }));
+
+      const updatedUser = await updateProfile({ avatar });
+      setUser((currentUserData) => ({
+        ...currentUserData,
+        avatar: updatedUser.avatar,
+      }));
+      setForm((currentForm) => ({
+        ...currentForm,
+        avatar: updatedUser.avatar,
+      }));
+      toast.success('Profile image updated');
+    } catch {
+      toast.error('Failed to update profile image');
+    }
   };
 
   const handleSave = async () => {
@@ -93,22 +155,37 @@ export default function Profile() {
           <div className="flex items-end gap-6">
             <div className="relative group">
                 <div className="w-32 h-32 rounded-2xl bg-gray-800 border-4 border-[#020617] overflow-hidden shadow-2xl flex items-center justify-center">
-                    {user.avatar ? (
+                    {(isEditing ? form.avatar : user.avatar) ? (
                         <img
-                        src={user.avatar}
+                        src={isEditing ? form.avatar : user.avatar}
                         alt="profile"
                         className="w-full h-full object-cover"
                         />
                     ) : (
                         <span className="text-4xl font-bold text-gray-400">{user.name.charAt(0)}</span>
                     )}
-                </div>
-                {isEditing && isOwnProfile && (
-                    <div className="absolute -bottom-2 -right-2 bg-gray-800 p-2 rounded-full border border-gray-700 shadow-lg cursor-pointer hover:bg-gray-700 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                    </div>
-                )}
-            </div>
+	                </div>
+		                {isOwnProfile && (
+		                    <>
+                      <input
+                        ref={avatarInputRef}
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        className="sr-only"
+                        onChange={handleAvatarFileChange}
+                      />
+		                    <button
+                        type="button"
+                        onClick={() => avatarInputRef.current?.click()}
+                        className="absolute -bottom-2 -right-2 bg-blue-600 p-3 rounded-full border-2 border-[#020617] shadow-lg cursor-pointer hover:bg-blue-500 transition"
+                        aria-label="Upload profile image"
+                        title="Upload profile image"
+                      >
+		                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+		                    </button>
+                      </>
+	                )}
+	            </div>
             
             <div className="mb-2">
               <h1 className="text-3xl font-bold text-white mb-1">{user.name}</h1>
@@ -220,7 +297,6 @@ const EditProfile = ({ user, form, handleChange, handleSave }) => {
     <div className="space-y-6 max-w-3xl">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Input name="name" label="Full Name" value={form.name} onChange={handleChange} />
-        <Input name="avatar" label="Avatar URL" value={form.avatar} onChange={handleChange} />
       </div>
 
       <div>

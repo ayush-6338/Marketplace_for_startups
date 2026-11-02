@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import apiClient from '../../services/apiClient';
 import GigCard from '../../components/gigs/GigCard';
 import CategoryBar from '../../components/gigs/CategoryBar';
@@ -9,11 +9,7 @@ const Gigs = () => {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('All');
 
-  useEffect(() => {
-    fetchGigs();
-  }, [category]);
-
-  const fetchGigs = async () => {
+  const fetchGigs = useCallback(async () => {
     setLoading(true);
     try {
       const url = category === 'All' 
@@ -22,12 +18,16 @@ const Gigs = () => {
       
       const res = await apiClient.get(url);
       setGigs(res.data);
-    } catch (err) {
+    } catch {
       showError('Failed to load gigs');
     } finally {
       setLoading(false);
     }
-  };
+  }, [category]);
+
+  useEffect(() => {
+    fetchGigs();
+  }, [fetchGigs]);
 
   return (
     <div className="min-h-screen bg-[#020617] text-white">

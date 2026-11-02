@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { getMyGigs } from '../../services/dashboardApi';
 import PostedGigs from '../../components/dashboard/PostedGigs';
 
 const StartupDashboard = () => {
   const [gigs, setGigs] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getMyGigs()
       .then(res => setGigs(res.data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => {});
   }, []);
 
   return (

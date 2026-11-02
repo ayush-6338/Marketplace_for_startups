@@ -14,7 +14,7 @@ const Favorites = () => {
             try {
                 const data = await getFavorites();
                 setFavorites(data);
-            } catch (error) {
+            } catch {
                 console.error("Failed to fetch favorites");
             } finally {
                 setLoading(false);

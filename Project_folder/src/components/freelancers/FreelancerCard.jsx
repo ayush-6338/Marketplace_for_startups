@@ -13,7 +13,7 @@ const FreelancerCard = ({ freelancer }) => {
     try {
         await toggleFavorite(freelancer._id);
         setIsFavorited(!isFavorited);
-    } catch (err) {
+    } catch {
         console.error("Failed to toggle favorite");
     }
   };

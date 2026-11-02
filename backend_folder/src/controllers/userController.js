@@ -1,5 +1,48 @@
 import User from '../models/User.js';
 
+const allowedProfileFields = [
+    'name',
+    'avatar',
+    'bio',
+    'location',
+    'skills',
+    'experience',
+    'portfolio',
+    'companyName',
+    'industry',
+    'teamSize',
+    'website',
+];
+
+const buildProfileUpdate = (body) => {
+    const update = {};
+
+    allowedProfileFields.forEach((field) => {
+        if (Object.prototype.hasOwnProperty.call(body, field)) {
+            update[field] = body[field];
+        }
+    });
+
+    if (typeof update.avatar === 'string') {
+        const isDataImage = /^data:image\/(jpeg|jpg|png|webp);base64,/.test(update.avatar);
+        const isHttpImage = /^https?:\/\/.+/i.test(update.avatar);
+
+        if (update.avatar && !isDataImage && !isHttpImage) {
+            const error = new Error('Invalid avatar image');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        if (update.avatar.length > 1_000_000) {
+            const error = new Error('Avatar image is too large');
+            error.statusCode = 400;
+            throw error;
+        }
+    }
+
+    return update;
+};
+
 // GET ALL FREELANCERS
 export const getFreelancers = async (req, res) => {
     try {
@@ -73,13 +116,23 @@ export const getMyProfile = (req, res) => {
 // UPDATE PROFILE
 export const updateProfile = async (req, res) => {
     try {
+        const profileUpdate = buildProfileUpdate(req.body);
         const user = await User.findByIdAndUpdate(
             req.user._id,
-            req.body,
+            profileUpdate,
             { new: true, runValidators: true }
-        );
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
         res.json(user);
     } catch (error) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
+
         res.status(500).json({ message: 'Failed to update profile' });
     }
 };

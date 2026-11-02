@@ -125,7 +125,25 @@ export const getMyGigs = async (req, res) => {
       // 3. Add proposalCount field
       {
         $addFields: {
-          proposalCount: { $size: '$proposals' }
+          proposalCount: { $size: '$proposals' },
+          acceptedProposalCount: {
+            $size: {
+              $filter: {
+                input: '$proposals',
+                as: 'proposal',
+                cond: { $eq: ['$$proposal.status', 'accepted'] }
+              }
+            }
+          },
+          rejectedProposalCount: {
+            $size: {
+              $filter: {
+                input: '$proposals',
+                as: 'proposal',
+                cond: { $eq: ['$$proposal.status', 'rejected'] }
+              }
+            }
+          }
         }
       },
 

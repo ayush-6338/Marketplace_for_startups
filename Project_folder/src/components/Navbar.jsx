@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { getMyNotifications, markNotificationAsRead } from '../services/notificationApi';
 import { showInfo } from '../utils/toast';
 
@@ -10,27 +10,30 @@ const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000); // Poll every 30s
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       const { notifications, unreadCount } = await getMyNotifications();
       setNotifications(notifications);
       setUnreadCount(unreadCount);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch notifications');
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(fetchNotifications, 0);
+    const interval = setInterval(fetchNotifications, 30000); // Poll every 30s
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [fetchNotifications]);
 
   const handleMarkRead = async (id) => {
     try {
       await markNotificationAsRead(id);
       fetchNotifications();
-    } catch (err) {
+    } catch {
         console.error("Failed mark read");
     }
   };

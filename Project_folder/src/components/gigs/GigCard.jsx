@@ -13,7 +13,7 @@ const GigCard = ({ gig }) => {
     try {
         await toggleFavorite(gig._id);
         setIsSaved(!isSaved);
-    } catch (err) {
+    } catch {
         console.error("Failed to save gig");
     }
   };

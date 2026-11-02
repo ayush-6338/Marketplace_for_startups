@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { showError, showSuccess } from '../../utils/toast';
+import { showSuccess } from '../../utils/toast';
 
 const Contact = () => {
     

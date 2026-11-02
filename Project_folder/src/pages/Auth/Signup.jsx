@@ -34,9 +34,12 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      const { confirmPassword, ...signupData } = form;
-
-      const res = await signup(signupData);
+      const res = await signup({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: form.role,
+      });
 
       // update context and storage
       loginAction(res.data.token, res.data.user);

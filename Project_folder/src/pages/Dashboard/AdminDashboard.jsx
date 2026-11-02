@@ -20,7 +20,7 @@ const AdminDashboard = () => {
       setStats(statsRes.data);
       setUsers(usersRes.data);
       setGigs(gigsRes.data);
-    } catch (error) {
+    } catch {
       console.error("Failed to load admin data");
     } finally {
       setLoading(false);
@@ -36,7 +36,7 @@ const AdminDashboard = () => {
       await suspendUser(userId);
       // update local state
       setUsers(users.map(u => u._id === userId ? { ...u, isSuspended: !u.isSuspended } : u));
-    } catch (error) {
+    } catch {
       showError('Action failed');
     }
   };
@@ -46,7 +46,7 @@ const AdminDashboard = () => {
       await hideGig(gigId);
       // update local state
       setGigs(gigs.map(g => g._id === gigId ? { ...g, isHidden: !g.isHidden } : g));
-    } catch (error) {
+    } catch {
       showError('Action failed');
     }
   };
